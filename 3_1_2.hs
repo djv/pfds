@@ -1,8 +1,9 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-import Test.QuickCheck
+{-import Test.QuickCheck-}
 import Data.List (sort)
 {-import Test.SmallCheck-}
+import Test.LazySmallCheck
 import Test.QuickCheck.All
 
 runTests = $quickCheckAll
@@ -11,14 +12,15 @@ data Heap a = E | H Int (Heap a) a (Heap a) deriving (Eq, Show)
 
 merge E h = h
 merge h E = h
-merge h1@(H _ a1 x1 b1) h2@(H _ a2 x2 b2) = if x1 < x2 then makeT x1 a1 (merge b1 h2)
-                                                       else makeT x2 a2 (merge h1 b2)
+merge h1@(H r1 a1 x1 b1) h2@(H r2 a2 x2 b2) =
+  if x1 < x2 then makeT (rank a1) (rank b1 + r2) x1 a1 (merge b1 h2)
+             else makeT (rank a2) (r1 + rank b2) x2 a2 (merge h1 b2)
 
 rank E = 0
 rank (H r _ _ _) = r
 
-makeT x a b = if rank a > rank b then H (rank b + 1) a x b
-                                 else H (rank a + 1) b x a
+makeT ra rb x a b = if ra > rb then H (1 + rb + ra) a x b
+                               else H (1 + ra + rb) b x a
 
 insert x h = merge (singleton x) h
 
@@ -81,7 +83,7 @@ checkRank E = True
 checkRank (H _ l _ r) = rank l >= rank r && checkRank l && checkRank r
 
 calcRank E = 0
-calcRank (H _ l v r) = 1 + calcRank r
+calcRank (H _ l v r) = 1 + calcRank l + calcRank r
 
 singleton x = H 1 E x E
 
