@@ -34,17 +34,19 @@ member x (T _ l v r) = if x < v then member x l
                                 else True
 
 insert x t = T B a y b where
-  T _ a y b = ins t
-  ins E = T R E x E
-  ins s@(T c l v r) = if x < v then balance c (ins l) v r
-                               else if x > v then balance c l v (ins r)
-                               else s
+  T _ a y b = snd $ ins t
+  ins E = (0, T R E x E)
+  ins s@(T c l v r) = if x < v then (-1, lbalance c (ins l) v r)
+                               else if x > v then (1, rbalance c l v (ins r))
+                               else (0, s)
 
-balance B (T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
-balance B (T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
-balance B a x (T R (T R b y c) z d) = T R (T B a x b) y (T B c z d)
-balance B a x (T R b y (T R c z d)) = T R (T B a x b) y (T B c z d)
-balance c l v r = T c l v r
+{-ex. 3.10-}
+lbalance B (-1, (T R (T R a x b) y c)) z d = T R (T B a x b) y (T B c z d)
+lbalance B (1, (T R a x (T R b y c))) z d = T R (T B a x b) y (T B c z d)
+lbalance c (_, l) v r = T c l v r
+rbalance B a x (-1, (T R (T R b y c) z d)) = T R (T B a x b) y (T B c z d)
+rbalance B a x (1, (T R b y (T R c z d))) = T R (T B a x b) y (T B c z d)
+rbalance c l v (_, r) = T c l v r
 
 fromList xs = foldr insert E xs
 
