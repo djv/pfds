@@ -51,27 +51,27 @@ partition p t@(T a x b) =
 insert2 x t = T s x b where
   (s, b) = partition x t
 
-prop_insert2 x xs = (elems $ insert x t) == (elems $ insert2 x t) where
+prop_insert2 x xs = elems (insert x t) == elems (insert2 x t) where
   t = fromList (xs :: [Int])
 
-fromList xs = foldr insert E xs
+fromList = foldr insert E
 
 elems E = []
-elems (T a x b) = (elems a) ++ [x] ++ (elems b)
+elems (T a x b) = elems a ++ [x] ++ elems b
 
-prop_elems xs = (sort es) == es where
+prop_elems xs = sort es == es where
   es = elems $ fromList (xs :: [Int])
 
-prop_fromList xs = (sort xs) == (elems $ fromList (xs :: [Int]))
+prop_fromList xs = sort xs == elems (fromList (xs :: [Int]))
 
 findMin (T E x b) = x
 findMin (T a x b) = findMin a
 
-prop_findMin xs = (not $ null xs) ==> (minimum xs) == (findMin $ fromList (xs :: [Int]))
+prop_findMin xs = not (null xs) ==> minimum xs == findMin (fromList (xs :: [Int]))
 
 deleteMin (T E x b) = b
 deleteMin (T (T E y a2) x b) = T a2 x b
 deleteMin (T (T a1 y a2) x b) = T (deleteMin a1) y (T a2 x b)
 
-prop_deleteMin xs = (not $ null xs) ==> (tail $ sort xs) == (elems $ deleteMin $
+prop_deleteMin xs = not (null xs) ==> tail (sort xs) == elems (deleteMin $
   fromList (xs :: [Int]))

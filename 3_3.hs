@@ -29,35 +29,35 @@ inv2 t = all (== head ps) ps where
 valid t = inv1 t && inv2 t
 
 member _ E = False
-member x (T _ l v r) = if x < v then member x l
-                                else if x > v then member x r
-                                else True
+member x (T _ l v r) | x < v = member x l
+                     | x > v = member x r
+                     | otherwise = True
 
 insert x t = T B a y b where
   T _ a y b = snd $ ins t
   ins E = (0, T R E x E)
-  ins s@(T c l v r) = if x < v then (-1, lbalance c (ins l) v r)
-                               else if x > v then (1, rbalance c l v (ins r))
-                               else (0, s)
+  ins s@(T c l v r) | x < v = (-1, lbalance c (ins l) v r)
+                    | x > v = (1, rbalance c l v (ins r))
+                    | otherwise = (0, s)
 
 {-ex. 3.10-}
-lbalance B (-1, (T R (T R a x b) y c)) z d = T R (T B a x b) y (T B c z d)
-lbalance B (1, (T R a x (T R b y c))) z d = T R (T B a x b) y (T B c z d)
+lbalance B (-1, T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
+lbalance B (1, T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
 lbalance c (_, l) v r = T c l v r
-rbalance B a x (-1, (T R (T R b y c) z d)) = T R (T B a x b) y (T B c z d)
-rbalance B a x (1, (T R b y (T R c z d))) = T R (T B a x b) y (T B c z d)
+rbalance B a x (-1, T R (T R b y c) z d) = T R (T B a x b) y (T B c z d)
+rbalance B a x (1, T R b y (T R c z d)) = T R (T B a x b) y (T B c z d)
 rbalance c l v (_, r) = T c l v r
 
-fromList xs = foldr insert E xs
+fromList = foldr insert E
 
 elems E = []
 elems (T _ l v r) = sort $ [v] ++ elems l ++ elems r
 
-prop_fromList xs = (nub $ sort xs) == (elems $ fromList (xs :: [Int]))
+prop_fromList xs = nub (sort xs) == elems (fromList (xs :: [Int]))
 
 prop_fromList_valid xs = valid $ fromList (xs :: [Int])
 
-prop_member xs = all (\x -> member x t) xs where
+prop_member xs = all (`member` t) xs where
   t = fromList (xs :: [Int])
 
 prop_insert x xs = member (x :: Int) (insert x $ fromList xs)
@@ -75,10 +75,10 @@ fromOrdList xs = build (if odd d then B else R) xs where
     s = length xs `div` 2
     (xs1, x:xs2) = splitAt s xs
 
-prop_fromOrdList xs = sxs == (elems $ fromOrdList sxs) where
+prop_fromOrdList xs = sxs == elems (fromOrdList sxs) where
   sxs = nub $ sort (xs :: [Int])
 
 prop_fromOrdList_valid xs = valid $ fromOrdList (nub $ sort xs :: [Int])
 
-prop_member2 xs = all (\x -> member x t) xs where
+prop_member2 xs = all (`member` t) xs where
   t = fromOrdList (nub $ sort xs :: [Int])
