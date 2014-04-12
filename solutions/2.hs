@@ -14,10 +14,10 @@ member x (T l v r) | x < v = member x l
                    | otherwise = True
 -- | Insert an element
 --
--- >>> insert 2 E
+-- >>> insert (2 :: Int) E
 -- T E 2 E
 --
--- >>> insert 1 (insert 2 E)
+-- >>> insert 1 (insert (2 :: Int) E)
 -- T (T E 1 E) 2 E
 --
 -- prop> member x (insert x (tree xs))

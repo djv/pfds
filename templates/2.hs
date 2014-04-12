@@ -12,10 +12,10 @@ member = error "fill in the function body"
 
 -- | Insert an element
 --
--- >>> insert 2 E
+-- >>> insert (2 :: Int) E
 -- T E 2 E
 --
--- >>> insert 1 (insert 2 E)
+-- >>> insert 1 (insert (2 :: Int) E)
 -- T (T E 1 E) 2 E
 --
 -- prop> member x (insert x (tree xs))
