@@ -38,7 +38,7 @@ headQ ([], _, _) = error "head on an empty queue"
 headQ ((x:_), _, _) = x
 
 tailQ :: RTQueue a -> RTQueue a
-tailQ ([], _, _) = emptyQ
+tailQ ([], _, _) = empty
 tailQ ((_:f), r, s) = exec (f, r, s)
 
 -- |
@@ -64,6 +64,13 @@ instance Arbitrary a => Arbitrary (Op a) where
 -- |
 --
 -- prop> inv $ foldr evalOp (fromList xs) (ops :: [Op Int])
+--
+-- prop> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
 evalOp :: Op a -> RTQueue a -> RTQueue a
 evalOp T = tailQ
 evalOp (P x) = put x
+
+evalOpL :: Op a -> [a] -> [a]
+evalOpL T [] = []
+evalOpL T xs = tail xs
+evalOpL (P x) xs = xs ++ [x]
