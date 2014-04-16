@@ -10,7 +10,7 @@ empty = (0, [])
 
 -- |
 --
--- >>> prop2 $ \xs ys -> mrg (sort (xs :: [Int])) (sort ys) == sort (xs ++ ys)
+-- >>> prop $ \xs ys -> mrg (sort (xs :: [Int])) (sort ys) == sort (xs ++ ys)
 mrg :: Ord a => [a] -> [a] -> [a]
 mrg [] ys = ys
 mrg xs [] = xs
@@ -20,7 +20,7 @@ mrg xs@(x:xs') ys@(y:ys') =
 
 -- |
 --
--- >>> prop2 $ \x xs -> x `elem` (elems $ add x $ fromList xs)
+-- >>> prop $ \x xs -> x `elem` (elems $ add x $ fromList xs)
 add :: Ord a => a -> Sort a -> Sort a
 add x (sz, sg) = (sz + 1, addSeg [x] sg sz) where
   addSeg :: Ord a => [a] -> [[a]] -> Int -> [[a]]
@@ -31,7 +31,7 @@ add x (sz, sg) = (sz + 1, addSeg [x] sg sz) where
 
 -- |
 --
--- >>> prop2 $ \xs -> sorted (fromList xs) == sort xs
+-- >>> prop $ \xs -> sorted (fromList xs) == sort xs
 sorted :: Ord a => (Int, [[a]]) -> [a]
 sorted (_, segs) = foldl mrg [] segs
 

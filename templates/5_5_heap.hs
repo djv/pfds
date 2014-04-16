@@ -1,7 +1,7 @@
 module PFDS55 where
 
 import Data.List (sort)
-import Test.QuickCheck
+import Testing
 import qualified Test.LazySmallCheck as SC
 import Control.Applicative
 
@@ -9,7 +9,7 @@ data Heap a = E | T a [Heap a] deriving (Show, Eq)
 
 -- |
 --
--- prop> (not $ null xs) ==> (minimum xs) == (findMin $ heap xs)
+-- >>> prop $ \(NonEmpty xs) -> (minimum xs) == (findMin $ heap xs)
 findMin :: Heap t -> t
 findMin = error "fill in the function body"
 
@@ -21,7 +21,7 @@ insert = error "fill in the function body"
 
 -- |
 --
--- prop> (sort xs) == (elems $ heap xs)
+-- >>> prop $ \xs -> (sort xs) == (elems $ heap xs)
 fromList :: Ord a => [a] -> Heap a
 fromList = error "fill in the function body"
 
@@ -33,7 +33,7 @@ mergePairs = error "fill in the function body"
 
 -- |
 --
--- prop> (not $ null xs) ==> (tail $ sort xs) == (elems $ deleteMin $ heap xs)
+-- >>> prop $ \(NonEmpty xs) -> (tail $ sort xs) == (elems $ deleteMin $ heap xs)
 deleteMin :: Ord a => Heap a -> Heap a
 deleteMin = error "fill in the function body"
 
@@ -45,13 +45,13 @@ toBinary = error "fill in the function body"
 
 -- |
 --
--- prop> (elems2 $ toBinary $ heap xs) == (elems $ heap xs)
+-- >>> prop $ \xs -> (elems2 $ toBinary $ heap xs) == (elems $ heap xs)
 elems2 :: Ord a => Tree a -> [a]
 elems2 = error "fill in the function body"
 
 -- |
 --
--- prop> (not $ null xs) ==> (minimum xs) == (findMin2 $ toBinary $ heap xs)
+-- >>> prop $ \(NonEmpty xs) -> (minimum xs) == (findMin2 $ toBinary $ heap xs)
 findMin2 :: Tree t -> t
 findMin2 = error "fill in the function body"
 
@@ -63,13 +63,13 @@ insert2 = error "fill in the function body"
 
 -- |
 --
--- prop> (sort xs) == (elems2 $ fromList2 (xs :: [Int]))
+-- >>> prop $ \xs -> (sort xs) == (elems2 $ fromList2 (xs :: [Int]))
 fromList2 :: Ord a => [a] -> Tree a
 fromList2 = error "fill in the function body"
 
 -- |
 --
--- prop> (not $ null xs) ==> (tail $ sort xs) == (elems2 $ deleteMin2 $ fromList2 (xs :: [Int]))
+-- >>> prop $ \(NonEmpty xs) -> (tail $ sort xs) == (elems2 $ deleteMin2 $ fromList2 (xs :: [Int]))
 deleteMin2 :: Ord a => Tree a -> Tree a
 deleteMin2 = error "fill in the function body"
 
@@ -90,14 +90,14 @@ evalOps ops = foldr evalOp E ops
 
 -- |
 --
--- prop> (elems $ evalOps (ops :: [Op Int])) == (elems2 $ evalOps2 ops)
+-- >>> prop $ \xs ops -> (elems $ evalOps (ops :: [Op Int])) == (elems2 $ evalOps2 ops)
 evalOp2 :: Ord a => Op a -> Tree a -> Tree a
 evalOp2 D = deleteMin2
 evalOp2 (I x) = insert2 x
 
 -- |
 --
--- prop> ((evalOps ops) /= E) ==> (findMin $ evalOps (ops :: [Op Int])) == (findMin2 $ evalOps2 ops)
+-- >>> prop $ \xs ops -> ((evalOps ops) /= E) ==> (findMin $ evalOps (ops :: [Op Int])) == (findMin2 $ evalOps2 ops)
 evalOps2 :: Ord a => [Op a] -> Tree a
 evalOps2 ops = foldr evalOp2 E' ops
 

@@ -14,7 +14,7 @@ emptyQ = ([], [])
 
 -- |
 --
--- >>> prop2 $ \q -> inv $ check (q :: Queue Int)
+-- >>> prop $ \q -> inv $ check (q :: Queue Int)
 check :: Queue a -> Queue a
 check ([], r) = (reverse r, [])
 check q = q
@@ -26,9 +26,9 @@ headQ ([], _) = error "invalid queue"
 
 -- |
 --
--- >>> prop2 $ \q -> (nonEmpty q) && (inv (q :: Queue Int)) ==> (inv $ tailQ q)
+-- >>> prop $ \q -> (nonEmpty q) && (inv (q :: Queue Int)) ==> (inv $ tailQ q)
 --
--- >>> prop2 $ \q -> (nonEmpty q) && (inv (q :: Queue Int)) ==> (elems $ tailQ q) == (tail $ elems q)
+-- >>> prop $ \q -> (nonEmpty q) && (inv (q :: Queue Int)) ==> (elems $ tailQ q) == (tail $ elems q)
 tailQ :: Queue a -> Queue a
 tailQ (_:f, r) = check (f, r)
 tailQ ([], []) = emptyQ
@@ -36,9 +36,9 @@ tailQ ([], _) = error "invalid queue"
 
 -- |
 --
--- >>> prop2 $ \x q -> (inv (q :: Queue Int)) ==> (inv $ put x q)
+-- >>> prop $ \x q -> (inv (q :: Queue Int)) ==> (inv $ put x q)
 --
--- >>> prop2 $ \x q -> (inv (q :: Queue Int)) ==> (elems $ put x q) == (elems q ++ [x])
+-- >>> prop $ \x q -> (inv (q :: Queue Int)) ==> (elems $ put x q) == (elems q ++ [x])
 put :: a -> Queue a -> Queue a
 put x (f, r) = check (f, x:r)
 
@@ -49,7 +49,7 @@ instance Arbitrary a => Arbitrary (Op a) where
 
 -- |
 --
--- >>> prop2 $ \q ops -> inv q ==> inv $ foldr evalOp q (ops :: [Op Int])
+-- >>> prop $ \q ops -> inv q ==> inv $ foldr evalOp q (ops :: [Op Int])
 evalOp :: Op a -> Queue a -> Queue a
 evalOp T = tailQ
 evalOp (P x) = put x

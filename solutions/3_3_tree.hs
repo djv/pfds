@@ -28,7 +28,7 @@ valid t = inv1 t && inv2 t
 
 -- |
 --
--- >>> prop2 $ \xs -> all (`member` (tree xs)) xs
+-- >>> prop $ \xs -> all (`member` (tree xs)) xs
 member :: Ord a => a -> Tree a -> Bool
 member _ E = False
 member x (T _ l v r) | x < v = member x l
@@ -37,9 +37,9 @@ member x (T _ l v r) | x < v = member x l
 
 -- |
 --
--- >>> prop2 $ \x xs -> member x (insert x $ tree xs)
+-- >>> prop $ \x xs -> member x (insert x $ tree xs)
 --
--- >>> prop2 $ \x xs -> valid $ insert x $ tree xs
+-- >>> prop $ \x xs -> valid $ insert x $ tree xs
 insert :: Ord a => a -> Tree a -> Tree a
 insert x t = T B a y b where
   T _ a y b = snd $ ins t
@@ -63,19 +63,19 @@ rbalance c l v (_, r) = T c l v r
 
 -- |
 --
--- >>> prop2 $ \xs -> nub (sort xs) == (elems $ tree xs)
+-- >>> prop $ \xs -> nub (sort xs) == (elems $ tree xs)
 --
--- >>> prop2 $ \xs -> valid $ tree xs
+-- >>> prop $ \xs -> valid $ tree xs
 fromList :: Ord a => [a] -> Tree a
 fromList = foldr insert E
 
 -- | Ex. 3.9
 --
--- >>> prop2 $ \xs -> let sxs = nub $ sort (xs :: [Int]) in sxs == elems (fromOrdList sxs)
+-- >>> prop $ \xs -> let sxs = nub $ sort (xs :: [Int]) in sxs == elems (fromOrdList sxs)
 --
--- >>> prop2 $ \xs -> valid $ fromOrdList (nub $ sort xs :: [Int])
+-- >>> prop $ \xs -> valid $ fromOrdList (nub $ sort xs :: [Int])
 --
--- >>> prop2 $ \xs -> let t = fromOrdList (nub $ sort xs :: [Int]) in all (`member` t) xs
+-- >>> prop $ \xs -> let t = fromOrdList (nub $ sort xs :: [Int]) in all (`member` t) xs
 fromOrdList :: [a] -> Tree a
 fromOrdList ys = build (if odd d then B else R) ys where
   d = floor $ logBase 2 $ fromIntegral $ length ys

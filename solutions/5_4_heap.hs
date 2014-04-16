@@ -49,27 +49,27 @@ partition p t@(T a x b) =
 
 -- |
 --
--- >>> prop2 $ \x xs -> elems (insert x $ tree xs) == elems (insert2 x $ tree xs)
+-- >>> prop $ \x xs -> elems (insert x $ tree xs) == elems (insert2 x $ tree xs)
 insert2 :: Ord a => a -> Tree a -> Tree a
 insert2 x t = T s x b where
   (s, b) = partition x t
 
 -- |
 --
--- >>> prop2 $ \xs -> sort xs == elems (fromList (xs :: [Int]))
+-- >>> prop $ \xs -> sort xs == elems (fromList (xs :: [Int]))
 fromList :: Ord a => [a] -> Tree a
 fromList = foldr insert E
 
 -- |
 --
--- >>> prop2 $ \xs -> let es = elems $ tree xs in sort es == es
+-- >>> prop $ \xs -> let es = elems $ tree xs in sort es == es
 elems :: Tree a -> [a]
 elems E = []
 elems (T a x b) = elems a ++ [x] ++ elems b
 
 -- |
 --
--- >>> prop2 $ \(NonEmpty xs) -> minimum xs == findMin (tree xs)
+-- >>> prop $ \(NonEmpty xs) -> minimum xs == findMin (tree xs)
 findMin :: Tree a -> a
 findMin E = error "findMin on an empty tree"
 findMin (T E x _) = x
@@ -77,7 +77,7 @@ findMin (T a _ _) = findMin a
 
 -- |
 --
--- >>> prop2 $ \(NonEmpty xs) -> tail (sort xs) == elems (deleteMin $ tree xs)
+-- >>> prop $ \(NonEmpty xs) -> tail (sort xs) == elems (deleteMin $ tree xs)
 deleteMin :: Tree t -> Tree t
 deleteMin E = error "deleteMin on an empty tree"
 deleteMin (T E _ b) = b

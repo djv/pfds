@@ -1,6 +1,7 @@
 module PDFS73 where
 
 import Data.List (sort)
+import Testing
 
 data Tree a = Node {root :: a, children :: [Tree a]}
   deriving (Show, Eq)
@@ -22,7 +23,7 @@ exec = error "fill in the function body"
 
 -- | Insert an element in to a heap
 --
--- prop> (elems $ insert x $ heap xs) == (sort $ x:xs)
+-- >>> prop $ \x xs -> (elems $ insert x $ heap xs) == (sort $ x:xs)
 insert :: Ord a => a -> Heap a -> Heap a
 insert = error "fill in the function body"
 
@@ -31,13 +32,13 @@ removeMinTree = error "fill in the function body"
 
 -- |
 --
--- prop> (not $ null xs) ==> (findMin $ heap xs) == (minimum xs)
+-- >>> prop $ \(NonEmpty xs) -> (findMin $ heap xs) == (minimum xs)
 findMin :: Ord a => Heap a -> a
 findMin = error "fill in the function body"
 
 -- |
 --
--- prop> (not $ null xs) ==> (elems . deleteMin $ heap xs) == (tail $ sort xs)
+-- >>> prop $ \(NonEmpty xs) -> (elems . deleteMin $ heap xs) == (tail $ sort xs)
 deleteMin :: Ord a => Heap a => Heap a
 deleteMin = error "fill in the function body"
 
@@ -61,6 +62,6 @@ fromList xs = foldr insert empty xs
 
 -- |
 --
--- prop> sort xs == (elems $ heap xs)
+-- >>> prop $ \xs -> sort xs == (elems $ heap xs)
 heap :: [Int] -> Heap Int
 heap = fromList

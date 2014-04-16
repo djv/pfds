@@ -13,7 +13,7 @@ link t1@(Node r x1 c1) t2@(Node _ x2 c2) =
 
 -- | Insert an element in to a heap
 --
--- >>> prop2 $ \x xs -> (elems $ insert x $ heap xs) == (sort $ x:xs)
+-- >>> prop $ \x xs -> (elems $ insert x $ heap xs) == (sort $ x:xs)
 insert :: (Ord a) => a -> Heap a -> Heap a
 insert x h = insTree (Node 0 x []) h
 
@@ -24,15 +24,15 @@ insTree t ts@(t':ts') = if rank t < rank t' then t:ts
 
 -- |
 --
--- >>> prop2 $ \xs -> sort xs == (elems $ heap xs)
+-- >>> prop $ \xs -> sort xs == (elems $ heap xs)
 --
--- >>> prop2 $ \xs -> let rs = map rank $ heap xs in sort rs == rs
+-- >>> prop $ \xs -> let rs = map rank $ heap xs in sort rs == rs
 fromList :: (Ord a) => [a] -> Heap a
 fromList xs = foldr insert [] xs
 
 -- |
 --
--- >>> prop2 $ \xs1 xs2 -> sort (xs1 ++ xs2) == elems (merge (heap xs1) (heap xs2))
+-- >>> prop $ \xs1 xs2 -> sort (xs1 ++ xs2) == elems (merge (heap xs1) (heap xs2))
 merge :: (Ord a) => Heap a -> Heap a -> Heap a
 merge h1 [] = h1
 merge [] h2 = h2
@@ -50,20 +50,20 @@ removeMinTree (t:ts) = if root t < root t' then (t, ts) else (t', t:ts') where
 
 -- |
 --
--- >>> prop2 $ \(NonEmpty xs) -> (findMin $ heap xs) == (minimum xs)
+-- >>> prop $ \(NonEmpty xs) -> (findMin $ heap xs) == (minimum xs)
 findMin :: (Ord a) => Heap a -> a
 findMin h = root . fst $ removeMinTree h
 
 -- |
 --
--- >>> prop2 $ \(NonEmpty xs) -> (elems . deleteMin $ heap xs) == (tail $ sort xs)
+-- >>> prop $ \(NonEmpty xs) -> (elems . deleteMin $ heap xs) == (tail $ sort xs)
 deleteMin :: (Ord a) => Heap a -> Heap a
 deleteMin h = merge (reverse cs) h2 where
   (Node _ _ cs , h2) = removeMinTree h
 
 -- | Ex. 3.5
 --
--- >>> prop2 $ \(NonEmpty xs) -> (findMin (heap xs)) == (findMin2 (heap xs))
+-- >>> prop $ \(NonEmpty xs) -> (findMin (heap xs)) == (findMin2 (heap xs))
 findMin2 :: (Ord a) => Heap a -> a
 findMin2 ts = minimum $ map root ts
 

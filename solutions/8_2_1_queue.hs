@@ -40,27 +40,27 @@ empty = (0, [], Idle, 0, [])
 
 -- |
 --
--- >>> prop2 $ \x xs -> x `elem` (elems $ put x $ fromList xs)
+-- >>> prop $ \x xs -> x `elem` (elems $ put x $ fromList xs)
 put :: a -> Queue a -> Queue a
 put x (lenf, f, state, lenr, r) = check (lenf, f, state, lenr+1, x:r)
 
 -- |
 --
--- >>> prop2 $ \(NonEmpty xs) -> headQ (fromList xs) == head xs
+-- >>> prop $ \(NonEmpty xs) -> headQ (fromList xs) == head xs
 headQ :: Queue a -> a
 headQ (_, [], _, _, _) = error "headQ on an empty queue"
 headQ (_, x:_, _, _, _) = x
 
 -- |
 --
--- >>> prop2 $ \xs -> not (null xs) ==> (elems $ tailQ $ fromList xs) == tail xs
+-- >>> prop $ \xs -> not (null xs) ==> (elems $ tailQ $ fromList xs) == tail xs
 tailQ :: Queue a -> Queue a
 tailQ (_, [], _, _, _) = empty
 tailQ (lenf, _:f, state, lenr, r) = check (lenf-1, f, invalidate state, lenr, r)
 
 -- |
 --
--- >>> prop2 $ \xs -> elems (fromList xs) == xs
+-- >>> prop $ \xs -> elems (fromList xs) == xs
 elems :: Queue a -> [a]
 elems (_, f, Idle, _, r) = f ++ reverse r
 elems (_, f, Reversing _ _ _ rr rr', _, r) = f ++ reverse rr ++ rr' ++ reverse r
@@ -77,7 +77,7 @@ instance Arbitrary a => Arbitrary (Op a) where
 
 -- |
 --
--- >>> prop2 $ \xs ops -> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
+-- >>> prop $ \xs ops -> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
 evalOp :: Op a -> Queue a -> Queue a
 evalOp T = tailQ
 evalOp (P x) = put x

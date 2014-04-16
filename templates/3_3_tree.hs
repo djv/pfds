@@ -1,7 +1,7 @@
 module PDFS33 where
 
 import Data.List (sort, nub)
-import Test.QuickCheck
+import Testing
 
 data Color = R | B deriving (Eq, Show)
 
@@ -28,15 +28,15 @@ valid t = inv1 t && inv2 t
 
 -- |
 --
--- prop> all (`member` (tree xs)) xs
+-- >>> prop $ \xs -> all (`member` (tree xs)) xs
 member :: Ord a => a -> Tree a -> Bool
 member = error "fill in the function body"
 
 -- |
 --
--- prop> member x (insert x $ tree xs)
+-- >>> prop $ \x xs -> member x (insert x $ tree xs)
 --
--- prop> valid $ insert x $ tree xs
+-- >>> prop $ \x xs -> valid $ insert x $ tree xs
 insert :: Ord a => a -> Tree a -> Tree a
 insert = error "fill in the function body"
 
@@ -51,19 +51,19 @@ rbalance = error "fill in the function body"
 
 -- |
 --
--- prop> nub (sort xs) == (elems $ tree xs)
+-- >>> prop $ \xs -> nub (sort xs) == (elems $ tree xs)
 --
--- prop> valid $ tree xs
+-- >>> prop $ \xs -> valid $ tree xs
 fromList :: Ord a => [a] -> Tree a
 fromList = error "fill in the function body"
 
 -- | Ex. 3.9
 --
--- prop> let sxs = nub $ sort (xs :: [Int]) in sxs == elems (fromOrdList sxs)
+-- >>> prop $ \xs -> let sxs = nub $ sort (xs :: [Int]) in sxs == elems (fromOrdList sxs)
 --
--- prop> valid $ fromOrdList (nub $ sort xs :: [Int])
+-- >>> prop $ \xs -> valid $ fromOrdList (nub $ sort xs :: [Int])
 --
--- prop> let t = fromOrdList (nub $ sort xs :: [Int]) in all (`member` t) xs
+-- >>> prop $ \xs -> let t = fromOrdList (nub $ sort xs :: [Int]) in all (`member` t) xs
 fromOrdList :: [a] -> Tree a
 fromOrdList = error "fill in the function body"
 

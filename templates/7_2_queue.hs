@@ -1,6 +1,6 @@
 module PDFS72 where
 
-import Test.QuickCheck
+import Testing
 
 type RTQueue a = ([a], [a], [a])
 
@@ -12,7 +12,7 @@ empty = error "fill in the function body"
 
 -- |
 --
--- prop> isEmpty (fromList xs) == null xs
+-- >>> prop $ \xs -> isEmpty (fromList xs) == null xs
 isEmpty :: RTQueue a -> Bool
 isEmpty = error "fill in the function body"
 
@@ -24,7 +24,7 @@ exec = error "fill in the function body"
 
 -- |
 --
--- prop> x `elem` (elems $ put x $ fromList xs)
+-- >>> prop $ \x xs -> x == (head $ elems $ put x $ fromList xs)
 put :: a -> RTQueue a -> RTQueue a
 put = error "fill in the function body"
 
@@ -36,13 +36,13 @@ tailQ = error "fill in the function body"
 
 -- |
 --
--- prop> size (fromList xs) == length xs
+-- >>> prop $ \xs -> size (fromList xs) == length xs
 size :: RTQueue a -> Int
 size = error "fill in the function body"
 
 -- |
 --
--- prop> elems (fromList xs) == xs
+-- >>> prop $ \xs -> elems (fromList xs) == xs
 fromList :: [Int] -> RTQueue Int
 fromList = error "fill in the function body"
 
@@ -56,7 +56,14 @@ instance Arbitrary a => Arbitrary (Op a) where
 
 -- |
 --
--- prop> inv $ foldr evalOp (fromList xs) (ops :: [Op Int])
+-- >>> prop $ \xs ops -> inv $ foldr evalOp (fromList xs) (ops :: [Op Int])
+--
+-- >>> prop $ \xs ops -> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
 evalOp :: Op a -> RTQueue a -> RTQueue a
 evalOp T = tailQ
 evalOp (P x) = put x
+
+evalOpL :: Op a -> [a] -> [a]
+evalOpL T [] = []
+evalOpL T xs = tail xs
+evalOpL (P x) xs = xs ++ [x]

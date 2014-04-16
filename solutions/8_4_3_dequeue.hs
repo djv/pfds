@@ -40,14 +40,14 @@ check q@(lenf, f, _, lenr, r, _) =
 
 -- |
 --
--- >>> prop2 $ \x xs -> x == (head $ elems $ cons x $ fromList xs)
+-- >>> prop $ \x xs -> x == (head $ elems $ cons x $ fromList xs)
 cons :: a -> RTDequeue a -> RTDequeue a
 cons x (lenf, f, sf, lenr, r, sr) =
   check (lenf + 1, x:f, exec1 sf, lenr, r, exec1 sr)
 
 -- |
 --
--- >>> prop2 $ \x xs -> x == (last $ elems $ snoc x $ fromList xs)
+-- >>> prop $ \x xs -> x == (last $ elems $ snoc x $ fromList xs)
 snoc :: a -> RTDequeue a -> RTDequeue a
 snoc x (lenf, f, sf, lenr, r, sr) =
   check (lenf, f, exec1 sf, lenr + 1, x:r, exec1 sr)
@@ -64,7 +64,7 @@ lastQ (_, _, _, _, x:_, _) = x
 
 -- |
 --
--- >>> prop2 $ \(NonEmpty xs) -> tail xs == (elems $ tailQ $ fromList xs)
+-- >>> prop $ \(NonEmpty xs) -> tail xs == (elems $ tailQ $ fromList xs)
 tailQ :: RTDequeue a -> RTDequeue a
 tailQ (_, [], _, _, [], _) = empty
 tailQ (_, [], _, _, _:_, _) = empty
@@ -72,7 +72,7 @@ tailQ (lenf, _:f', sf, lenr, r, sr) = check (lenf - 1, f', exec2 sf, lenr, r, ex
 
 -- |
 --
--- >>> prop2 $ \(NonEmpty xs) -> init xs == (elems $ initQ $ fromList xs)
+-- >>> prop $ \(NonEmpty xs) -> init xs == (elems $ initQ $ fromList xs)
 initQ :: RTDequeue a -> RTDequeue a
 initQ (_, [], _, _, [], _) = empty
 initQ (_, _:_, _, _, [], _) = empty
@@ -80,13 +80,13 @@ initQ (lenf, f, sf, lenr, _:r', sr) = check (lenf, f, exec2 sf, lenr - 1, r', ex
 
 -- |
 --
--- >>> prop2 $ \xs -> elems (fromList xs) == xs
+-- >>> prop $ \xs -> elems (fromList xs) == xs
 fromList :: [Int] -> RTDequeue Int
 fromList = foldr cons empty
 
 -- |
 --
--- >>> prop2 $ \xs -> elems (fromList xs) == elems (fromList2 xs)
+-- >>> prop $ \xs -> elems (fromList xs) == elems (fromList2 xs)
 fromList2 :: [Int] -> RTDequeue Int
 fromList2 = foldl (flip snoc) empty
 
@@ -100,7 +100,7 @@ instance Arbitrary a => Arbitrary (Op a) where
 
 -- |
 --
--- >>> prop2 $ \xs ops -> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
+-- >>> prop $ \xs ops -> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
 evalOp :: Op a -> RTDequeue a -> RTDequeue a
 evalOp T = tailQ
 evalOp I = initQ

@@ -6,7 +6,7 @@ data Tree a = E | T (Tree a) a (Tree a) deriving (Show, Eq)
 
 -- | Query for an element
 --
--- >>> prop2 $ \xs -> all (`member` (tree xs)) xs
+-- >>> prop $ \xs -> all (`member` (tree xs)) xs
 member :: Ord a => a -> Tree a -> Bool
 member _ E = False
 member x (T l v r) | x < v = member x l
@@ -20,7 +20,7 @@ member x (T l v r) | x < v = member x l
 -- >>> insert 1 (insert (2 :: Int) E)
 -- T (T E 1 E) 2 E
 --
--- >>> prop2 $ \x xs -> member x (insert x (tree xs))
+-- >>> prop $ \x xs -> member x (insert x (tree xs))
 insert :: Ord a => a -> Tree a -> Tree a
 insert x E = T E x E
 insert x t@(T l v r) | x < v = T (insert x l) v r
@@ -29,9 +29,9 @@ insert x t@(T l v r) | x < v = T (insert x l) v r
 
 -- | Version of `member` with less comparisons. Ex. 2.2
 --
--- >>> prop2 $ \xs -> all (`member2` (tree xs)) xs
+-- >>> prop $ \xs -> all (`member2` (tree xs)) xs
 --
--- >>> prop2 $ \x xs -> member x (tree xs) == member2 x (tree xs)
+-- >>> prop $ \x xs -> member x (tree xs) == member2 x (tree xs)
 member2 :: Ord a => a -> Tree a -> Bool
 member2 z t = member2' z t Nothing where
   member2' x E (Just v) = x == v
@@ -41,7 +41,7 @@ member2 z t = member2' z t Nothing where
 -- | Version of `insert` which doesn't copy the 
 -- whole search path. Ex. 2.3
 --
--- >>> prop2 $ \x xs -> insert x (tree xs) == insert2 x (tree xs)
+-- >>> prop $ \x xs -> insert x (tree xs) == insert2 x (tree xs)
 insert2 :: Ord a => a -> Tree a -> Tree a
 insert2 z t = maybe t id $ ins' z t where
   ins' :: Ord a => a -> Tree a -> Maybe (Tree a)
@@ -52,7 +52,7 @@ insert2 z t = maybe t id $ ins' z t where
 
 -- | Ex. 2.4
 --
--- >>> prop2 $ \x xs -> insert x (tree xs) == insert3 x (tree xs)
+-- >>> prop $ \x xs -> insert x (tree xs) == insert3 x (tree xs)
 insert3 :: Ord a => a -> Tree a -> Tree a
 insert3 z t = maybe t id $ ins' z t Nothing where
   ins' :: Ord a => a -> Tree a -> Maybe a -> Maybe (Tree a)
@@ -64,7 +64,7 @@ insert3 z t = maybe t id $ ins' z t Nothing where
 
 -- | Builds a complete binary tree
 --
--- >>> prop2 $ \(NonNegative d) x -> (size $ complete x (d `mod` 16)) == 2^(d `mod` 16) - 1
+-- >>> prop $ \(NonNegative d) x -> (size $ complete x (d `mod` 16)) == 2^(d `mod` 16) - 1
 complete :: a -> Int -> Tree a
 complete _ 0 = E
 complete x d = T t x t where
@@ -72,13 +72,13 @@ complete x d = T t x t where
 
 -- |
 --
--- >>> prop2 $ \(NonNegative d) x -> complete x (d `mod` 16) == complete2 x (d `mod` 16)
+-- >>> prop $ \(NonNegative d) x -> complete x (d `mod` 16) == complete2 x (d `mod` 16)
 complete2 :: a -> Int -> Tree a
 complete2 x d = iterate (\t -> T t x t) E !! d
 
 -- |
 --
--- >>> prop2 $ \(NonNegative c) -> let d = c `mod` 16 in (size (fst $ create2 1 d) == d) && (size (snd $ create2 1 d) == d + 1)
+-- >>> prop $ \(NonNegative c) -> let d = c `mod` 16 in (size (fst $ create2 1 d) == d) && (size (snd $ create2 1 d) == d + 1)
 create2 :: a -> Int -> (Tree a, Tree a)
 create2 x 0 = (E, T E x E)
 create2 x m = if odd m then (T t1 x t1, T t1 x t2) else (T t1 x t2, T t2 x t2) where
@@ -86,7 +86,7 @@ create2 x m = if odd m then (T t1 x t1, T t1 x t2) else (T t1 x t2, T t2 x t2) w
 
 -- |
 --
--- >>> prop2 $ \(NonNegative d) -> size (balanced 1 (d `mod` 16)) == d `mod` 16
+-- >>> prop $ \(NonNegative d) -> size (balanced 1 (d `mod` 16)) == d `mod` 16
 balanced :: a -> Int -> Tree a
 balanced x m = fst $ create2 x m
 
@@ -100,7 +100,7 @@ fromList = foldr insert E
 
 -- | Computes the number of elements in a tree
 --
--- >>> prop2 $ \x xs -> let t = tree xs in size (insert x t) == (size t + (if member x t then 0 else 1))
+-- >>> prop $ \x xs -> let t = tree xs in size (insert x t) == (size t + (if member x t then 0 else 1))
 size :: Tree a -> Int
 size E = 0
 size (T l _ r) = size l + size r + 1
