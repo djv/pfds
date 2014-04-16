@@ -1,7 +1,7 @@
 module PFDS55 where
 
 import Data.List (sort)
-import Test.QuickCheck
+import Testing
 import qualified Test.LazySmallCheck as SC
 import Control.Applicative
 
@@ -9,7 +9,7 @@ data Heap a = E | T a [Heap a] deriving (Show, Eq)
 
 -- |
 --
--- prop> (not $ null xs) ==> (minimum xs) == (findMin $ heap xs)
+-- >>> prop2 $ \(NonEmpty xs) -> (minimum xs) == (findMin $ heap xs)
 findMin :: Heap t -> t
 findMin E = error "findMin on an empty heap"
 findMin (T x _) = x
@@ -26,7 +26,7 @@ insert x h = merge (T x []) h
 
 -- |
 --
--- prop> (sort xs) == (elems $ heap xs)
+-- >>> prop2 $ \xs -> (sort xs) == (elems $ heap xs)
 fromList :: Ord a => [a] -> Heap a
 fromList xs = foldr insert E xs
 
@@ -41,7 +41,7 @@ mergePairs (h1:h2:hs) = merge (merge h1 h2) (mergePairs hs)
 
 -- |
 --
--- prop> (not $ null xs) ==> (tail $ sort xs) == (elems $ deleteMin $ heap xs)
+-- >>> prop2 $ \(NonEmpty xs) -> (tail $ sort xs) == (elems $ deleteMin $ heap xs)
 deleteMin :: Ord a => Heap a -> Heap a
 deleteMin E = E
 deleteMin (T _ hs) = mergePairs hs
@@ -58,14 +58,14 @@ toBinary h = convert h [] where
 
 -- |
 --
--- prop> (elems2 $ toBinary $ heap xs) == (elems $ heap xs)
+-- >>> prop2 $ \xs -> (elems2 $ toBinary $ heap xs) == (elems $ heap xs)
 elems2 :: Ord a => Tree a -> [a]
 elems2 E' = []
 elems2 (T' l v r) = sort $ v : (elems2 l ++ elems2 r)
 
 -- |
 --
--- prop> (not $ null xs) ==> (minimum xs) == (findMin2 $ toBinary $ heap xs)
+-- >>> prop2 $ \(NonEmpty xs) -> (minimum xs) == (findMin2 $ toBinary $ heap xs)
 findMin2 :: Tree t -> t
 findMin2 E' = error "findMin on an empty heap"
 findMin2 (T' _ v _) = v
@@ -83,13 +83,13 @@ insert2 x t = merge2 (T' E' x E') t
 
 -- |
 --
--- prop> (sort xs) == (elems2 $ fromList2 (xs :: [Int]))
+-- >>> prop2 $ \xs -> (sort xs) == (elems2 $ fromList2 (xs :: [Int]))
 fromList2 :: Ord a => [a] -> Tree a
 fromList2 xs = foldr insert2 E' xs
 
 -- |
 --
--- prop> (not $ null xs) ==> (tail $ sort xs) == (elems2 $ deleteMin2 $ fromList2 (xs :: [Int]))
+-- >>> prop2 $ \(NonEmpty xs) -> (tail $ sort xs) == (elems2 $ deleteMin2 $ fromList2 (xs :: [Int]))
 deleteMin2 :: Ord a => Tree a -> Tree a
 deleteMin2 E' = E'
 deleteMin2 (T' ll _ E') = mergePairs2 ll where
@@ -114,14 +114,14 @@ evalOps ops = foldr evalOp E ops
 
 -- |
 --
--- prop> (elems $ evalOps (ops :: [Op Int])) == (elems2 $ evalOps2 ops)
+-- >>> prop2 $ \xs ops -> (elems $ evalOps (ops :: [Op Int])) == (elems2 $ evalOps2 ops)
 evalOp2 :: Ord a => Op a -> Tree a -> Tree a
 evalOp2 D = deleteMin2
 evalOp2 (I x) = insert2 x
 
 -- |
 --
--- prop> ((evalOps ops) /= E) ==> (findMin $ evalOps (ops :: [Op Int])) == (findMin2 $ evalOps2 ops)
+-- >>> prop2 $ \xs ops -> ((evalOps ops) /= E) ==> (findMin $ evalOps (ops :: [Op Int])) == (findMin2 $ evalOps2 ops)
 evalOps2 :: Ord a => [Op a] -> Tree a
 evalOps2 ops = foldr evalOp2 E' ops
 

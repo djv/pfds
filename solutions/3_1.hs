@@ -1,6 +1,6 @@
 module PDFS31 where
 
-import Test.QuickCheck
+import Testing
 import Data.List (sort)
 
 data Heap a = E | H Int (Heap a) a (Heap a) deriving (Eq, Show)
@@ -30,46 +30,57 @@ merge2 h1@(H r1 a1 x1 b1) h2@(H r2 a2 x2 b2) =
 merge :: (Ord a) => Heap a -> Heap a -> Heap a
 merge = merge2
 
+calcRank :: Heap a -> Int
+calcRank = calcRank2
+
+calcRank1 :: Heap a -> Int
+calcRank1 E = 0
+calcRank1 (H _ _ _ r) = 1 + calcRank1 r
+
+calcRank2 :: Heap a -> Int
+calcRank2 E = 0
+calcRank2 (H _ l _ r) = 1 + calcRank2 l + calcRank2 r
+
 -- | Computes the rank of a given heap
 --
--- (calcRank $ heap xs) == (rank $ heap xs)
+-- >>> prop2 $ \xs -> (calcRank $ heap xs) == (rank $ heap xs)
 rank :: Heap a -> Int
 rank E = 0
 rank (H r _ _ _) = r
 
 -- | Insert an element in to a heap
 --
--- prop> (elems $ insert x $ heap xs) == (sort $ x:xs)
+-- >>> prop2 $ \x xs -> (elems $ insert x $ heap xs) == (sort $ x:xs)
 insert :: (Ord a) => a -> Heap a -> Heap a
 insert x h = merge (singleton x) h
 
 -- |
 --
--- prop> (not $ null xs) ==> (findMin $ heap xs) == (minimum xs)
+-- >>> prop2 $ \(NonEmpty xs) -> (findMin $ heap xs) == (minimum xs)
 findMin :: (Ord a) => Heap a -> a
 findMin E = error "findMin on an empty heap"
 findMin (H _ _ x _) = x
 
 -- |
 --
--- prop> (not $ null xs) ==> checkRank . deleteMin $ heap xs
+-- >>> prop2 $ \(NonEmpty xs) -> checkRank . deleteMin $ heap xs
 deleteMin :: (Ord a) => Heap a -> Heap a
 deleteMin E = error "deleteMin on an empty heap"
 deleteMin (H _ a _ b) = merge a b
 
 -- |
 --
--- prop> (elems $ heap xs) == sort xs
+-- >>> prop2 $ \xs -> (elems $ heap xs) == sort xs
 --
--- prop> checkRank $ heap xs
+-- >>> prop2 $ \xs -> checkRank $ heap xs
 --
--- prop> (not $ null xs) ==> (findMin $ heap xs) == (minimum xs)
+-- >>> prop2 $ \(NonEmpty xs) -> (findMin $ heap xs) == (minimum xs)
 fromList :: (Ord a) => [a] -> Heap a
 fromList xs = foldr insert E xs
 
 -- | Ex. 3.2
 --
--- prop> (elems $ insert x $ heap xs) == (elems $ insert2 x $ heap xs)
+-- >>> prop2 $ \x xs -> (elems $ insert x $ heap xs) == (elems $ insert2 x $ heap xs)
 insert2 :: (Ord a) => a -> Heap a -> Heap a
 insert2 x E = singleton x
 insert2 x h@(H m l v r) = if x < v then H 0 h x E
@@ -77,11 +88,11 @@ insert2 x h@(H m l v r) = if x < v then H 0 h x E
 
 -- | Ex. 3.3
 --
--- prop> (elems $ heap xs) == (elems $ fromList2 xs)
+-- >>> prop2 $ \xs -> (elems $ heap xs) == (elems $ fromList2 xs)
 --
--- prop> checkRank $ fromList2 (xs :: [Int])
+-- >>> prop2 $ \xs -> checkRank $ fromList2 (xs::[Int])
 --
--- prop> (not $ null (xs :: [Int])) ==> (findMin $ fromList2 xs) == (minimum xs)
+-- >>> prop2 $ \(NonEmpty xs) -> (findMin $ fromList2 (xs::[Int])) == (minimum xs)
 fromList2 :: (Ord a) => [a] -> Heap a
 fromList2 [] = E
 fromList2 xs = head . f $ map singleton xs where
@@ -94,10 +105,6 @@ fromList2 xs = head . f $ map singleton xs where
 checkRank :: Heap a -> Bool
 checkRank E = True
 checkRank (H _ l _ r) = rank l >= rank r && checkRank l && checkRank r
-
-calcRank :: Heap a -> Int
-calcRank E = 0
-calcRank (H _ _ _ r) = 1 + calcRank r
 
 singleton :: a -> Heap a
 singleton x = H 1 E x E

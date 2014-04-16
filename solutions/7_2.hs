@@ -1,6 +1,6 @@
 module PDFS72 where
 
-import Test.QuickCheck
+import Testing
 
 type RTQueue a = ([a], [a], [a])
 
@@ -12,7 +12,7 @@ empty = ([], [], [])
 
 -- |
 --
--- prop> isEmpty (fromList xs) == null xs
+-- >>> prop2 $ \xs -> isEmpty (fromList xs) == null xs
 isEmpty :: RTQueue a -> Bool
 isEmpty ([], _, _) = True
 isEmpty _ = False
@@ -29,7 +29,7 @@ exec q@(_, _, []) = (f', [], f') where
 
 -- |
 --
--- prop> x `elem` (elems $ put x $ fromList xs)
+-- >>> prop2 $ \x xs -> x == (head $ elems $ put x $ fromList xs)
 put :: a -> RTQueue a -> RTQueue a
 put x (f, r, s) = exec (f, x:r, s)
 
@@ -43,13 +43,13 @@ tailQ ((_:f), r, s) = exec (f, r, s)
 
 -- |
 --
--- prop> size (fromList xs) == length xs
+-- >>> prop2 $ \xs -> size (fromList xs) == length xs
 size :: RTQueue a -> Int
 size (_, r, s) = 2 * (length r) + length s
 
 -- |
 --
--- prop> elems (fromList xs) == xs
+-- >>> prop2 $ \xs -> elems (fromList xs) == xs
 fromList :: [Int] -> RTQueue Int
 fromList = foldl (flip put) empty
 
@@ -63,9 +63,9 @@ instance Arbitrary a => Arbitrary (Op a) where
 
 -- |
 --
--- prop> inv $ foldr evalOp (fromList xs) (ops :: [Op Int])
+-- >>> prop2 $ \xs ops -> inv $ foldr evalOp (fromList xs) (ops :: [Op Int])
 --
--- prop> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
+-- >>> prop2 $ \xs ops -> (foldr evalOpL xs ops) == (elems $ foldr evalOp (fromList xs) ops)
 evalOp :: Op a -> RTQueue a -> RTQueue a
 evalOp T = tailQ
 evalOp (P x) = put x
