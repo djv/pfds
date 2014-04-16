@@ -29,7 +29,7 @@ exec q@(_, _, []) = (f', [], f') where
 
 -- |
 --
--- >>> prop $ \x xs -> x == (head $ elems $ put x $ fromList xs)
+-- >>> prop $ \x xs -> x == (last $ elems $ put x $ fromList xs)
 put :: a -> RTQueue a -> RTQueue a
 put x (f, r, s) = exec (f, x:r, s)
 

@@ -24,7 +24,7 @@ exec = error "fill in the function body"
 
 -- |
 --
--- >>> prop $ \x xs -> x == (head $ elems $ put x $ fromList xs)
+-- >>> prop $ \x xs -> x == (last $ elems $ put x $ fromList xs)
 put :: a -> RTQueue a -> RTQueue a
 put = error "fill in the function body"
 
